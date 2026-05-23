@@ -11,7 +11,6 @@ public class App {
         boolean[] isVitoria = new boolean[3];
 
         int totalElementos = tabelaJogo.length * tabelaJogo[0].length;
-        Thread.sleep(5000);
 
         boolean jogador1 = true;
         boolean jogador2 = false;
@@ -28,9 +27,11 @@ public class App {
                 System.out.println("Jogador 1 venceu, Parabéns!");
             }
             if (jogador2) {
+                mostrarTabela(tabelaJogo);
                 System.out.println("Jogador 2 venceu, Parabéns!");
             }
         } else {
+            mostrarTabela(tabelaJogo);
             System.out.println("deu velha");
         }
 
@@ -44,78 +45,74 @@ public class App {
 
     public static boolean[] receberJogada (String [][] tabela, boolean jogador1, boolean jogador2, int totalElementos, Scanner leitor, boolean[] isVitoria) throws Exception{
         ArrayList<String> opcoesEscolhidas = new ArrayList<>();
-        int linha = -1;
-        int coluna = -1;
+
         for(int i = 0; i < totalElementos; i++){            
             if(jogador1){
-                while(jogador1){
+                boolean isRight = false;
+                while(isRight != true){
                     mostrarTabela(tabela);
                     System.out.println();
                     System.out.println("Qual numero voce deseja jogar o X jogador 1? ");
                     System.out.print("Opcao: ");
                     String escolha = leitor.nextLine();
-                    boolean isRight = false;
-                    while(isRight != true){
-                        for(int l = 0; l < tabela.length; l++){
-                            for(int j = 0; j < tabela[i].length; j++){
-                                if(tabela[l][j].equals(escolha)){
-                                    tabela[l][j] = "x";
-                                    isVitoria = verificandoVitoria(tabela, jogador1, jogador2);
-                                    if(isVitoria[2] == true){
-                                        break;
-                                    }
-                                    jogador1 = !jogador1;
-                                    jogador2 = !jogador2;
-                                    opcoesEscolhidas.add(escolha);
-                                } else if(opcoesEscolhidas.contains(escolha)){
-                                    System.out.println("a opcao " + escolha + "já foi escolhida, por favor escolha outro!");
+                    boolean encontrado = false;
+                    for(int l = 0; l < tabela.length && !encontrado; l++){
+                        for(int j = 0; j < tabela[l].length; j++){
+                            if(tabela[l][j].equals(escolha)){
+                                tabela[l][j] = "x";
+                                isVitoria = verificandoVitoria(tabela, jogador1, jogador2);
+                                if(isVitoria[2] == true){
+                                    encontrado = true;
+                                    isRight = true;
+                                    break;
                                 }
+                                jogador1 = !jogador1;
+                                jogador2 = !jogador2;
+                                opcoesEscolhidas.add(escolha);
+                                encontrado = true;
+                                isRight = true;
+                                break;
+                            } else if(opcoesEscolhidas.contains(escolha)){
+                                System.out.println("a opcao " + escolha + "já foi escolhida, por favor escolha outro!");
                             }
                         }
                     }
-                
-                    if(tabela[linha][coluna].equals("x") || tabela[linha][coluna].equals("o")){
-                        System.out.println("Essa linha já foi jogada ");
-                        limpaTela();
-                    } else {
-                        tabela[linha][coluna] = "x";
-                        isVitoria = verificandoVitoria(tabela, jogador1, jogador2);
-                        if(isVitoria[2] == true){
-                            break;
-                        }
-                        
-                    }
+                    limpaTela();
                 } 
             } else if(jogador2){
-                while(jogador2){
+                boolean isRight = false;
+                while(isRight != true){
                     mostrarTabela(tabela);
                     System.out.println();
-                    System.out.println("Qual linha e coluna você deseja jogar O jogador 2? ");
-                    System.out.print("Linha: ");
-                    linha = leitor.nextInt();
-                    linha -= 1;
-                    leitor.nextLine();
-                    System.out.print("Coluna: ");
-                    coluna = leitor.nextInt();
-                    coluna -= 1;
-                    leitor.nextLine();
-                
-                    if(tabela[linha][coluna].equals("x") || tabela[linha][coluna].equals("o")){
-                        System.out.println("Essa linha já foi jogada ");
-                        Thread.sleep(4000);
-                        limpaTela();
-                    } else {
-                        tabela[linha][coluna] = "o";
-                        isVitoria = verificandoVitoria(tabela, jogador1, jogador2);
-                        if(isVitoria[2] == true){
-                            break;
+                    System.out.println("Qual numero voce deseja jogar o O jogador 2? ");
+                    System.out.print("Opcao: ");
+                    String escolha = leitor.nextLine();
+                    boolean encontrado = false;
+                    for(int l = 0; l < tabela.length && !encontrado; l++){
+                        for(int j = 0; j < tabela[l].length; j++){
+                            if(tabela[l][j].equals(escolha)){
+                                tabela[l][j] = "o";
+                                isVitoria = verificandoVitoria(tabela, jogador1, jogador2);
+                                if(isVitoria[2] == true){
+                                    encontrado = true;
+                                    isRight = true;
+                                    break;
+                                }
+                                jogador2 = !jogador2;
+                                jogador1= !jogador1;
+                                opcoesEscolhidas.add(escolha);
+                                encontrado = true;
+                                isRight = true;
+                                break;
+                            } else if(opcoesEscolhidas.contains(escolha)){
+                                System.out.println("a opcao " + escolha + "já foi escolhida, por favor escolha outro!");
+                                
+                            }
                         }
-                        jogador2 = !jogador2;
-                        jogador1 = !jogador1;
                     }
+                    limpaTela();
                 }
             }
-            limpaTela();
             if(isVitoria[2] == true){
                 break;
             }
@@ -158,7 +155,7 @@ public class App {
                     jogador2 = true;
                     isVitoria = true;
                 }
-            } else if(tabela[0][i].equals(tabela[1][i]) && tabela[i][1].equals(tabela[2][i])){//Verificando coluna
+            } else if(tabela[0][i].equals(tabela[1][i]) && tabela[1][i].equals(tabela[2][i])){//Verificando coluna
                 if(tabela[0][i].equals("x")){
                     jogador1 = true;
                     jogador2 = false;
@@ -175,7 +172,7 @@ public class App {
                     isVitoria = true;
                 } else if(tabela[0][0].equals("o")){
                     jogador1 = false;
-                    jogador1 = true;
+                    jogador2 = true;
                     isVitoria = true;
                 }
             } else if(tabela[0][2].equals(tabela[1][1]) && tabela[1][1].equals(tabela[2][0])){
@@ -185,7 +182,7 @@ public class App {
                     isVitoria = true;
                 } else if(tabela[0][2].equals("o")){
                     jogador1 = false;
-                    jogador1 = true;
+                    jogador2 = true;
                     isVitoria = true;
                 }
             }
